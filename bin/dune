@@ -1,0 +1,4 @@
+(executable
+ (public_name ottto)
+ (name main)
+ (libraries ottto))
