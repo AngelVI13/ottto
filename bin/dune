@@ -1,4 +1,6 @@
 (executable
  (public_name ottto)
  (name main)
- (libraries ottto))
+ (libraries ottto)
+ (preprocess
+  (pps ppx_deriving.show ppx_deriving.ord)))
