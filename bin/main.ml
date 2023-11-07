@@ -31,19 +31,36 @@ module Board = struct
     in
     { board with state; player_to_move }
 
-    let compute_winning_lines board =
-        [[0;1;2];[3;4;5];[6;7;8];[0;3;6];[1;4;7];[2;5;8]]
+  let compute_winning_lines _board =
+    [[0;1;2];[3;4;5];[6;7;8];[0;3;6];[1;4;7];[2;5;8];[0;4;8];[2;4;6]]
 
-    let is_game_over board = 
-        let lines = compute_winning_lines board.row_size in
-        None
+  let rec check_line_aux board score line =
+    match line with 
+    | [] -> ( match abs(score)/board.row_size with | -1 -> PlayerX | 1 -> PlayerO | _ -> NoPlayer)
+    | hd :: tl -> check_line_aux board (match List.nth board.state hd with | PlayerX -> score -1 | PlayerO -> +1 | _ -> score) tl
 
-let row_size = 3
+ let check_line board line =
+     check_line_aux board 0 line
 
-let () =
-  let b = Board.new_ row_size in
-  print_newline ();
-  let b = Board.make_move 0 b in
-  print_int @@ List.length b.state;
-  print_newline ();
-  print_string @@ Board.show_board b
+ let rec check_lines_aux board lines results =
+     match lines with
+     | [] -> results
+     | hd::tl -> check_lines_aux board tl ((check_line board hd)::results)
+
+ let check_lines board lines =
+     check_lines_aux board lines []
+
+
+  let is_game_over board = 
+      let results = compute_winning_lines board.row_size |> check_lines board |> List.filter (fun r -> r != NoPlayer) in
+      List.nth_opt results 0
+
+  let row_size = 3
+
+  let () =
+    let b = Board.new_ row_size in
+    print_newline ();
+    let b = Board.make_move 0 b in
+    print_int @@ List.length b.state;
+    print_newline ();
+    print_string @@ Board.show_board b
