@@ -34,7 +34,15 @@ module Board = struct
     let player_to_move = opposite_player board.player_to_move in
     { board with state; player_to_move }
 
-  let compute_winning_lines _board =
+  let compute_winning_lines board =
+    let lines = [] in
+    let lines =
+      List.filteri (fun i _ -> 0 = i mod board.row_size) board.state :: lines
+    in
+    (* TODO: how to calculate all the cols and not just the first one *)
+    lines
+
+  (*
     [
       [ 0; 1; 2 ];
       [ 3; 4; 5 ];
@@ -45,6 +53,7 @@ module Board = struct
       [ 0; 4; 8 ];
       [ 2; 4; 6 ];
     ]
+    *)
 
   let rec check_line_aux board score line =
     match line with
